@@ -19,8 +19,8 @@ class Block extends Component {
     }
     
     count () {
-    const right = this.props.right;
-    const left = this.props.left;
+    const right = this.props.border ? this.props.border.right : null;
+    const left = this.props.border? this.props.border.left : null;
     const myBorderRight = this.element.current ? this.element.current.getBoundingClientRect().right : 0;
     const myBorderLeft = this.element.current ? this.element.current.getBoundingClientRect().left : 0;
     // At first when React render element, the left and right is null because the element hasn't been render yet,

@@ -21,6 +21,7 @@ class App extends Component {
 
     this.element = React.createRef();
     this.setBorder = this.setBorder.bind(this);
+    this.handleCollision = this.handleCollision.bind(this);
   }
   
   // this is only for initial set up
@@ -28,8 +29,8 @@ class App extends Component {
     this.data.border = {
         left: this.element.current ? this.element.current.getBoundingClientRect().left : null,
         right: this.element.current ? this.element.current.getBoundingClientRect().right : null,
-        up: this.element.current ? this.element.current.getBoundingClientRect().up : null,
-        down: this.element.current ? this.element.current.getBoundingClientRect().down: null
+        top: this.element.current ? this.element.current.getBoundingClientRect().top : null,
+        bottom: this.element.current ? this.element.current.getBoundingClientRect().bottom : null
     };
   }
 
@@ -45,21 +46,26 @@ class App extends Component {
     }, 1000);
   }
 
+  handleCollision() {
+    // do something if it collide with an object
+  }
  
 
   render() {
-    const left = this.data.border.left;
-    const right = this.data.border.right;
-    
+    if (this.state.isCollision) {
+      return (<div>Game over</div>);
+    }
     return (
       <div className="view" >
         <div className="contain">
           <div className="border" ref={this.element}>
             <Block 
-            left={left} 
-            right={right}
+              border={this.data.border}
             />
-            <Player move={this.state.move}/>
+            <Player 
+              border={this.data.border}
+              checkCollision={this.handleCollision}
+              />
           </div>
         </div>
       </div>

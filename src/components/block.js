@@ -28,9 +28,9 @@ class Block extends Component {
     if (!left || !right) {
         return;
     }
-        if (myBorderRight >= right - 10) {
+        if (myBorderRight >= right) {
             this.setState({ moveAhead: false });
-        } else if (myBorderLeft <= left + 10) {
+        } else if (myBorderLeft <= left) {
             this.setState({ moveAhead: true });
         }
     
@@ -38,16 +38,16 @@ class Block extends Component {
         if (this.state.moveAhead) {
             
             // check collision when move ahead
-            if (myBorderRight + this.speed >= right - 10) {
-                let movementDistance = right - myBorderRight - 10;
+            if (myBorderRight + this.speed >= right) {
+                let movementDistance = right - myBorderRight;
                 this.setState({ count: this.state.count + movementDistance })
             } else {
                 this.setState({ count: this.state.count + 50 });
             }
         } else if (!this.state.moveAhead){
 
-            if (myBorderLeft - this.speed <= left + 10) {
-                const movementDistance = Math.abs(left + 9 - myBorderLeft);
+            if (myBorderLeft - this.speed <= left) {
+                const movementDistance = Math.abs(left - myBorderLeft);
                 this.setState({ count: this.state.count - movementDistance })
             } else {
                 this.setState({ count: this.state.count - 50 });

@@ -20,14 +20,17 @@ code {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  border: 1px solid black;
 }
 
 .contain {
+  border: 10px solid black;
+  margin: auto;
+}
+
+.border {
   box-sizing: border-box;
   height: 400px;
   width: 600px;
-  border: 10px solid black;
   margin: auto;
 }
 
@@ -44,7 +47,6 @@ code {
 #player {
   position: relative;
   border: 5px solid black;
-  
   width: 50px;
   height: 50px;
 }

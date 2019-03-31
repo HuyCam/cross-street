@@ -6,9 +6,45 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  border: 1px solid black;
+}
+
+.contain {
+  box-sizing: border-box;
+  height: 400px;
+  width: 600px;
+  border: 10px solid black;
+  margin: auto;
+}
+
+#block {
+  border: 1px solid black;
+  background-color: #9fc2fc;
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 50px;
+}
+
+#player {
+  position: relative;
+  border: 5px solid black;
+  
+  width: 50px;
+  height: 50px;
 }

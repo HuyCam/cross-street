@@ -19,17 +19,35 @@ class Player extends Component {
             }
             
         }
-
         this.newPosition = this.newPosition.bind(this);
         this.checkDirection = this.checkDirection.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.handleKeyUp = this.handleKeyUp.bind(this);
         this.checkCollisionWithBorder = this.checkCollisionWithBorder.bind(this);
     }
 
     componentDidMount() {
-        document.addEventListener('keydown', (e) => {
-            this.handleKeyDown(e);
-            this.checkDirection();
+        document.addEventListener('keydown', this.handleKeyDown);
+        document.addEventListener('keyup', this.handleKeyUp);
+        // timer is like gameloop, it check game rendering each 200 ms
+        this.timerID = setInterval(this.checkDirection, 50);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.handleKeyDown);
+        document.removeEventListener('keyup', this.handleKeyUp);
+        clearInterval(this.timerID);
+    }
+
+
+    handleKeyUp() {
+        this.setState({
+            move: {
+                left: false,
+                right: false,
+                up: false,
+                down: false
+            }
         });
     }
 
@@ -104,7 +122,6 @@ class Player extends Component {
             return;
         }
         if (this.state.move.left) {
-            console.log('left');
             const newLeft = this.state.position.left - this.state.speed;
             this.newPosition(newLeft);
             // return;
@@ -159,6 +176,17 @@ class Player extends Component {
     }
 
     render() {
+        if (this.player.current) {
+            this.props.updateObjectPosition({
+                name: 'player',
+                position: {
+                    top: this.player.current.getBoundingClientRect().top,
+                    right: this.player.current.getBoundingClientRect().right,
+                    bottom: this.player.current.getBoundingClientRect().bottom,
+                    left: this.player.current.getBoundingClientRect().left
+                }
+            });
+        }
         return (
             <div style={this.state.position} id='player' ref={this.player}>
                 Player

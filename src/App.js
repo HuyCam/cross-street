@@ -7,7 +7,8 @@ class App extends Component {
     super(props);
     this.state = { 
       start: false,
-      isCollision: false
+      isCollision: false,
+      isWon: false
     };
     // data include game environment data like object coordination, dimenson and border coordination
     this.data = {
@@ -19,12 +20,15 @@ class App extends Component {
       }
     }
 
+    this.winBlock = React.createRef();
+
     this.element = React.createRef();
     this.setBorder = this.setBorder.bind(this);
     this.updateObjectPosition = this.updateObjectPosition.bind(this);
     this.checkCollision = this.checkCollision.bind(this);
     this.isInScope = this.isInScope.bind(this);
     this.handleButton = this.handleButton.bind(this);
+    this.decideWinLose = this.decideWinLose.bind(this);
   }
   
   // this is only for initial set up
@@ -47,6 +51,18 @@ class App extends Component {
         start: true
       });
     }, 1000);
+
+    // add win block coordinate to the data, the win block is to indicate if the player win.
+    // if the player touch the win block => win.
+    if (this.winBlock.current) {
+      this.data.winBlock = {
+        name: 'win block',
+        top: this.winBlock.current.getBoundingClientRect().top,
+        bottom: this.winBlock.current.getBoundingClientRect().bottom,
+        right: this.winBlock.current.getBoundingClientRect().right,
+        left: this.winBlock.current.getBoundingClientRect().left
+      }
+    }
   }
 
   updateObjectPosition(blockInfo) {
@@ -66,44 +82,61 @@ class App extends Component {
     if (this.data.block2 && this.data.player) {
       this.checkCollision(this.data.player, this.data.block2);
     }
+
+    if (this.data.winBlock && this.data.player) {
+      this.checkCollision(this.data.player, this.data.winBlock);
+    }
   }
 
   checkCollision(obj1, obj2) {
-    this.isInScope (obj1, obj2);
+    if (obj1.name === 'win block' || obj2.name === 'win block') {
+      this.isInScope(obj1, obj2, true);
+    } else {
+      this.isInScope (obj1, obj2);
+    }
+    
 
   }
 
-  // in scope to check collision
-  isInScope(obj1, obj2) {
-
-    // check top left point of the obj1
-    if (obj1.top >= obj2.top && obj1.top <= obj2.bottom && obj1.left >= obj2.left && obj1.left <= obj2.right) {
+  decideWinLose(isWin) {
+    if (isWin) {
+      this.setState({
+        isWon: true
+      })
+    } else {
       this.setState({
         isCollision: true
-      });
+      })
+    }
+  }
+  // in scope to check collision
+  isInScope(obj1, obj2, isWinBlock = false) {
+    // check top left point of the obj1
+    if (obj1.top >= obj2.top && obj1.top <= obj2.bottom && obj1.left >= obj2.left && obj1.left <= obj2.right) {
+      this.decideWinLose(isWinBlock);
     } // check top right point of obj1
     else if (obj1.top >= obj2.top && obj1.top <= obj2.bottom && 
       obj1.right >= obj2.left && obj1.right <= obj2.right) {
-      this.setState({
-        isCollision: true
-      });
+        this.decideWinLose(isWinBlock);
     } // check bottom right point of obj1
     else if (obj1.bottom >= obj2.top && obj1.bottom <= obj2.bottom && obj1.right >= obj2.left && obj1.right <= obj2.right) {
-      this.setState({
-        isCollision: true
-      });
+      this.decideWinLose(isWinBlock);
     } // check bottom left
     else if (obj1.bottom >= obj2.top && obj1.bottom <= obj2.bottom && obj1.left >= obj2.left && obj1.left <= obj2.right) {
-      this.setState({
-        isCollision: true
-      });
+      this.decideWinLose(isWinBlock);
     }
   }
 
   handleButton() {
     this.setState({
-      isCollision: false
+      isCollision: false,
     });
+
+    this.setState({
+      isWon: false
+    });
+
+    this.data.player = {};
   }
 
   render() {
@@ -114,11 +147,18 @@ class App extends Component {
         Game over
         <button onClick={this.handleButton} >Play again</button>
         </div>);
+    } else if (this.state.isWon) {
+      return (<div>
+        You Won. Nice
+        <button onClick={this.handleButton} >Play again</button>
+        </div>
+      );
     }
     return (
       <div className="view" >
         <div className="contain">
           <div className="border" ref={this.element}>
+            <div id="win" ref={this.winBlock}></div>
             <Block 
               border={this.data.border}
               blockName="block1" // block name is used when update its position

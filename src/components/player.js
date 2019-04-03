@@ -15,7 +15,7 @@ class Player extends Component {
             },
             position: {
                 left: this.player.current ? this.player.current.getBoundingClientRect().left : 275,
-                top: this.player.current ? this.player.current.getBoundingClientRect().top : 230
+                top: this.player.current ? this.player.current.getBoundingClientRect().top : 170
             }
             
         }

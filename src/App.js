@@ -24,6 +24,7 @@ class App extends Component {
     this.updateObjectPosition = this.updateObjectPosition.bind(this);
     this.checkCollision = this.checkCollision.bind(this);
     this.isInScope = this.isInScope.bind(this);
+    this.handleButton = this.handleButton.bind(this);
   }
   
   // this is only for initial set up
@@ -57,45 +58,62 @@ class App extends Component {
       right: blockInfo.position.right
     }
     this.data = Object.assign(this.data, object);
+
     if (this.data.block1 && this.data.player) {
-      this.checkCollision();
+      this.checkCollision(this.data.player, this.data.block1);
     }
     
+    if (this.data.block2 && this.data.player) {
+      this.checkCollision(this.data.player, this.data.block2);
+    }
   }
 
-  checkCollision() {
-    // this.isInScope(this.data.player, this.data.block1);
-    //do something to check colistion.
-    const obj1 = this.data.player;
-    const obj2 = this.data.block1;
+  checkCollision(obj1, obj2) {
+    this.isInScope (obj1, obj2);
 
+  }
+
+  // in scope to check collision
+  isInScope(obj1, obj2) {
+
+    // check top left point of the obj1
     if (obj1.top >= obj2.top && obj1.top <= obj2.bottom && obj1.left >= obj2.left && obj1.left <= obj2.right) {
       this.setState({
         isCollision: true
       });
-    } // check top right point of object1
+    } // check top right point of obj1
     else if (obj1.top >= obj2.top && obj1.top <= obj2.bottom && 
       obj1.right >= obj2.left && obj1.right <= obj2.right) {
       this.setState({
         isCollision: true
       });
+    } // check bottom right point of obj1
+    else if (obj1.bottom >= obj2.top && obj1.bottom <= obj2.bottom && obj1.right >= obj2.left && obj1.right <= obj2.right) {
+      this.setState({
+        isCollision: true
+      });
+    } // check bottom left
+    else if (obj1.bottom >= obj2.top && obj1.bottom <= obj2.bottom && obj1.left >= obj2.left && obj1.left <= obj2.right) {
+      this.setState({
+        isCollision: true
+      });
     }
-
   }
 
-  isInScope(object1, object2) {
-    // check top left point of object1
-    if (object1.top >= object2.top && object1.top <= object2.bottom && object1.left >= object2.left && object1.left <= object2.right) {
-      console.log('collision at the top left point');
-    }
+  handleButton() {
+    this.setState({
+      isCollision: false
+    });
   }
 
   render() {
     // every time this object is rendered, it updates its position to the App.js
     // which I treat it as game environment manage collision.
     if (this.state.isCollision) {
-
-      return (<div>Game over</div>);
+      return (<div>
+        Game over
+        <button onClick={this.handleButton} >Play again</button>
+        </div>);
     }
     return (
       <div className="view" >
@@ -105,6 +123,13 @@ class App extends Component {
               border={this.data.border}
               blockName="block1" // block name is used when update its position
               updateObjectPosition = {this.updateObjectPosition}
+              frameSpeed ={20}
+            />
+            <Block 
+              border={this.data.border}
+              blockName="block2" // block name is used when update its position
+              updateObjectPosition = {this.updateObjectPosition}
+              frameSpeed ={40}
             />
             <Player 
               border={this.data.border}

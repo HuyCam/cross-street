@@ -7,17 +7,23 @@ class Block extends Component {
         super(props);
         this.state = { leftPo: 0 , moveAhead: true};
         this.move = this.move.bind(this);
-        this.speed = 50;
+
+        // this speed is just how far the object move each time
+        this.speed = 5;
         this.element = React.createRef();
     }
     
     componentDidMount () {
         this.timerID = setInterval(
             () => this.move(),
-            500
+            this.props.frameSpeed? this.props.frameSpeed : 50
         );
     }
     
+    componentWillUnmount() {
+        clearInterval(this.timerID);
+    }
+
     move () {
     const right = this.props.border ? this.props.border.right : null;
     const left = this.props.border? this.props.border.left : null;
@@ -25,7 +31,7 @@ class Block extends Component {
     const myBorderLeft = this.element.current ? this.element.current.getBoundingClientRect().left : 0;
     // At first when React render element, the left and right is null because the element hasn't been render yet,
     // we check that before make any movement for the container box.
-    if (!left || !right || 1) {
+    if (!left || !right) {
         return;
     }
         if (myBorderRight >= right) {
@@ -37,12 +43,12 @@ class Block extends Component {
         // set movement
         if (this.state.moveAhead) {
             
-            // check collision when move ahead
+            // check collision with border when move ahead
             if (myBorderRight + this.speed >= right) {
                 let movementDistance = right - myBorderRight;
                 this.setState({ leftPo: this.state.leftPo + movementDistance })
             } else {
-                this.setState({ leftPo: this.state.leftPo + 50 });
+                this.setState({ leftPo: this.state.leftPo + this.speed });
             }
         } else if (!this.state.moveAhead){
 
@@ -50,7 +56,7 @@ class Block extends Component {
                 const movementDistance = Math.abs(left - myBorderLeft);
                 this.setState({ leftPo: this.state.leftPo - movementDistance })
             } else {
-                this.setState({ leftPo: this.state.leftPo - 50 });
+                this.setState({ leftPo: this.state.leftPo - this.speed });
             }  
         }
     }
@@ -71,7 +77,7 @@ class Block extends Component {
         return (
         <div style={{
             left: this.state.leftPo
-        }} id="block" ref={this.element}>
+        }} id={this.props.blockName} ref={this.element}>
             Test block
           </div>
         );

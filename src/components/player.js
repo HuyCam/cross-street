@@ -26,6 +26,16 @@ class Player extends Component {
         this.checkCollisionWithBorder = this.checkCollisionWithBorder.bind(this);
     }
 
+    componentDidUpdate() {
+        if (this.props.reset) {
+            this.setState({
+                position: {
+                    left: 275,
+                    top: 170
+                }
+            })
+        }
+    }
     componentDidMount() {
         document.addEventListener('keydown', this.handleKeyDown);
         document.addEventListener('keyup', this.handleKeyUp);
@@ -120,7 +130,8 @@ class Player extends Component {
     checkDirection() {
         if (this.checkCollisionWithBorder()) {
             return;
-        }
+        } 
+
         if (this.state.move.left) {
             const newLeft = this.state.position.left - this.state.speed;
             this.newPosition(newLeft);
@@ -138,6 +149,7 @@ class Player extends Component {
             this.newPosition(this.state.position.left, newTop);
             // return;
         }
+
     }
 
     checkCollisionWithBorder() {
@@ -146,6 +158,7 @@ class Player extends Component {
         const top = this.props.border.top;
         const bottom = this.props.border.bottom;
         const speed = 1;
+        let isWon = false;
         const player = {
             top: this.player.current.getBoundingClientRect().top,
             right: this.player.current.getBoundingClientRect().right,
@@ -170,7 +183,7 @@ class Player extends Component {
             return true;
         }
         else {
-            this.setState({ isBorderCollision: false })
+            this.setState({ isBorderCollision: false });
             return false;
         }
     }

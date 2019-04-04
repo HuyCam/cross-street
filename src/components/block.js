@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 class Block extends Component {
     constructor(props) {
         super(props);
-        this.state = { leftPo: 0 , moveAhead: true};
+        this.state = { leftPo: 0 , moveAhead: true };
         this.move = this.move.bind(this);
 
         // this speed is just how far the object move each time
@@ -19,9 +19,18 @@ class Block extends Component {
             this.props.frameSpeed? this.props.frameSpeed : 50
         );
     }
+
+    componentDidUpdate() {
+        clearInterval(this.timerID);
+        this.timerID = setInterval(
+            () => this.move(),
+            this.props.frameSpeed? this.props.frameSpeed : 50
+        );
+    }
     
     componentWillUnmount() {
         clearInterval(this.timerID);
+
     }
 
     move () {
@@ -34,33 +43,35 @@ class Block extends Component {
     if (!left || !right) {
         return;
     }
-        if (myBorderRight >= right) {
-            this.setState({ moveAhead: false });
-        } else if (myBorderLeft <= left) {
-            this.setState({ moveAhead: true });
-        }
-    
-        // set movement
-        if (this.state.moveAhead) {
-            
-            // check collision with border when move ahead
-            if (myBorderRight + this.speed >= right) {
-                let movementDistance = right - myBorderRight;
-                this.setState({ leftPo: this.state.leftPo + movementDistance })
-            } else {
-                this.setState({ leftPo: this.state.leftPo + this.speed });
-            }
-        } else if (!this.state.moveAhead){
-
-            if (myBorderLeft - this.speed <= left) {
-                const movementDistance = Math.abs(left - myBorderLeft);
-                this.setState({ leftPo: this.state.leftPo - movementDistance })
-            } else {
-                this.setState({ leftPo: this.state.leftPo - this.speed });
-            }  
-        }
+    if (myBorderRight >= right) {
+        this.setState({ moveAhead: false });
+    } else if (myBorderLeft <= left) {
+        this.setState({ moveAhead: true });
     }
+
+    // set movement
+    if (this.state.moveAhead) {
+        
+        // check collision with border when move ahead
+        if (myBorderRight + this.speed >= right) {
+            let movementDistance = right - myBorderRight;
+            this.setState({ leftPo: this.state.leftPo + movementDistance })
+        } else {
+            this.setState({ leftPo: this.state.leftPo + this.speed });
+        }
+    } else if (!this.state.moveAhead){
+
+        if (myBorderLeft - this.speed <= left) {
+            const movementDistance = Math.abs(left - myBorderLeft);
+            this.setState({ leftPo: this.state.leftPo - movementDistance })
+        } else {
+            this.setState({ leftPo: this.state.leftPo - this.speed });
+        }  
+    }
+    }
+
     render() {
+        
         if (this.element.current) {
             const blockName = this.props.blockName;
             this.props.updateObjectPosition({

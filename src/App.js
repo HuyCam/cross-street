@@ -8,10 +8,24 @@ class App extends Component {
     this.state = { 
       start: false,
       isCollision: false,
-      isWon: false
+      isWon: false,
+      level: 'level1',
+      resetPlayerPosition: false
     };
     // data include game environment data like object coordination, dimenson and border coordination
     this.data = {
+      level1: {
+        frameSpeed2: 40,
+        frameSpeed1: 20
+      },
+      level2: {
+        frameSpeed2: 30,
+        frameSpeed1: 10
+      },
+      level3: {
+        frameSpeed2: 20,
+        frameSpeed1: 5
+      },
       border: {
         left: null,
         right: null,
@@ -78,12 +92,10 @@ class App extends Component {
     if (this.data.block1 && this.data.player) {
       this.checkCollision(this.data.player, this.data.block1);
     }
-    
     if (this.data.block2 && this.data.player) {
       this.checkCollision(this.data.player, this.data.block2);
     }
-
-    if (this.data.winBlock && this.data.player) {
+    if (this.data.player && this.data.winBlock) {
       this.checkCollision(this.data.player, this.data.winBlock);
     }
   }
@@ -94,36 +106,53 @@ class App extends Component {
     } else {
       this.isInScope (obj1, obj2);
     }
-    
-
   }
 
   decideWinLose(isWin) {
+    // check if player pass all level
+    // isLevel1: true,
+    //   isLevel2: false,
+    //   isLevel3: false
     if (isWin) {
-      this.setState({
-        isWon: true
-      })
+        if (this.state.level === 'level1') {
+          this.setState({
+            level: 'level2',
+            resetPlayerPosition: true
+          });
+        } else if (this.state.level === 'level2') {
+          this.setState({
+            level: 'level3',
+            resetPlayerPosition: true
+          });
+        } else {
+          this.setState({
+            level: 'level1',
+            isWon: true,
+            resetPlayerPosition: true
+          });
+        }
     } else {
       this.setState({
         isCollision: true
-      })
+      });
     }
+
+    
   }
   // in scope to check collision
   isInScope(obj1, obj2, isWinBlock = false) {
     // check top left point of the obj1
     if (obj1.top >= obj2.top && obj1.top <= obj2.bottom && obj1.left >= obj2.left && obj1.left <= obj2.right) {
-      this.decideWinLose(isWinBlock);
+      return this.decideWinLose(isWinBlock);
     } // check top right point of obj1
-    else if (obj1.top >= obj2.top && obj1.top <= obj2.bottom && 
-      obj1.right >= obj2.left && obj1.right <= obj2.right) {
-        this.decideWinLose(isWinBlock);
+    else if (obj1.top >= obj2.top && obj1.top <= obj2.bottom && obj1.right >= obj2.left && obj1.right <= obj2.right) {
+        return this.decideWinLose(isWinBlock);
     } // check bottom right point of obj1
     else if (obj1.bottom >= obj2.top && obj1.bottom <= obj2.bottom && obj1.right >= obj2.left && obj1.right <= obj2.right) {
-      this.decideWinLose(isWinBlock);
+      return this.decideWinLose(isWinBlock);
     } // check bottom left
     else if (obj1.bottom >= obj2.top && obj1.bottom <= obj2.bottom && obj1.left >= obj2.left && obj1.left <= obj2.right) {
-      this.decideWinLose(isWinBlock);
+      return this.decideWinLose(isWinBlock);
     }
   }
 
@@ -139,7 +168,33 @@ class App extends Component {
     this.data.player = {};
   }
 
+  resetPosition() {
+    if (this.state.resetPlayerPosition) {
+      this.setState({
+        resetPlayerPosition: false
+      });
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   render() {
+    let frameSpeed1, frameSpeed2;
+    switch (this.state.level) {
+      case 'level1':
+      frameSpeed1 = this.data.level1.frameSpeed1;
+      frameSpeed2 = this.data.level1.frameSpeed2;
+      break;
+      case 'level2':
+      frameSpeed1 = this.data.level2.frameSpeed1;
+      frameSpeed2 = this.data.level2.frameSpeed2;
+      break;
+      case 'level3':
+      frameSpeed1 = this.data.level3.frameSpeed1;
+      frameSpeed2 = this.data.level3.frameSpeed2;
+      break;
+    }
     // every time this object is rendered, it updates its position to the App.js
     // which I treat it as game environment manage collision.
     if (this.state.isCollision) {
@@ -147,13 +202,14 @@ class App extends Component {
         Game over
         <button onClick={this.handleButton} >Play again</button>
         </div>);
-    } else if (this.state.isWon) {
-      return (<div>
-        You Won. Nice
-        <button onClick={this.handleButton} >Play again</button>
-        </div>
-      );
-    }
+    } 
+    // else if (this.state.isWon) {
+    //   return (<div>
+    //     You Won. Nice
+    //     <button onClick={this.handleButton} >Play again</button>
+    //     </div>
+    //   );
+    // }
     return (
       <div className="view" >
         <div className="contain">
@@ -163,18 +219,21 @@ class App extends Component {
               border={this.data.border}
               blockName="block1" // block name is used when update its position
               updateObjectPosition = {this.updateObjectPosition}
-              frameSpeed ={20}
+              frameSpeed ={frameSpeed1}
+
             />
             <Block 
               border={this.data.border}
               blockName="block2" // block name is used when update its position
               updateObjectPosition = {this.updateObjectPosition}
-              frameSpeed ={40}
+              frameSpeed ={frameSpeed2}
             />
             <Player 
               border={this.data.border}
               updateObjectPosition = {this.updateObjectPosition}
-              />
+              reset={this.resetPosition()}
+            />
+            
           </div>
         </div>
       </div>

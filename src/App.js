@@ -9,8 +9,7 @@ class App extends Component {
       start: false,
       isCollision: false,
       isWon: false,
-      level: 'level1',
-      resetPlayerPosition: false
+      resetPlayerPositionSwitch: false
     };
     // data include game environment data like object coordination, dimenson and border coordination
     this.data = {
@@ -79,7 +78,8 @@ class App extends Component {
     }
   }
 
-  updateObjectPosition(blockInfo) {
+  // isPlayer is to indicate that if this method is sent by player object
+  updateObjectPosition(blockInfo, isPlayer = false) {
     let object = new Object();
     object[blockInfo.name] = {
       top: blockInfo.position.top,
@@ -95,7 +95,7 @@ class App extends Component {
     if (this.data.block2 && this.data.player) {
       this.checkCollision(this.data.player, this.data.block2);
     }
-    if (this.data.player && this.data.winBlock) {
+    if (this.data.player && this.data.winBlock && isPlayer) {
       this.checkCollision(this.data.player, this.data.winBlock);
     }
   }
@@ -114,23 +114,10 @@ class App extends Component {
     //   isLevel2: false,
     //   isLevel3: false
     if (isWin) {
-        if (this.state.level === 'level1') {
-          this.setState({
-            level: 'level2',
-            resetPlayerPosition: true
-          });
-        } else if (this.state.level === 'level2') {
-          this.setState({
-            level: 'level3',
-            resetPlayerPosition: true
-          });
-        } else {
-          this.setState({
-            level: 'level1',
-            isWon: true,
-            resetPlayerPosition: true
-          });
-        }
+        this.setState({
+          isWon: true,
+          resetPlayerPosition: true
+        });
     } else {
       this.setState({
         isCollision: true
@@ -168,33 +155,8 @@ class App extends Component {
     this.data.player = {};
   }
 
-  resetPosition() {
-    if (this.state.resetPlayerPosition) {
-      this.setState({
-        resetPlayerPosition: false
-      });
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   render() {
-    let frameSpeed1, frameSpeed2;
-    switch (this.state.level) {
-      case 'level1':
-      frameSpeed1 = this.data.level1.frameSpeed1;
-      frameSpeed2 = this.data.level1.frameSpeed2;
-      break;
-      case 'level2':
-      frameSpeed1 = this.data.level2.frameSpeed1;
-      frameSpeed2 = this.data.level2.frameSpeed2;
-      break;
-      case 'level3':
-      frameSpeed1 = this.data.level3.frameSpeed1;
-      frameSpeed2 = this.data.level3.frameSpeed2;
-      break;
-    }
+    let frameSpeed1 = 10, frameSpeed2 = 20;
     // every time this object is rendered, it updates its position to the App.js
     // which I treat it as game environment manage collision.
     if (this.state.isCollision) {
@@ -203,13 +165,13 @@ class App extends Component {
         <button onClick={this.handleButton} >Play again</button>
         </div>);
     } 
-    // else if (this.state.isWon) {
-    //   return (<div>
-    //     You Won. Nice
-    //     <button onClick={this.handleButton} >Play again</button>
-    //     </div>
-    //   );
-    // }
+    else if (this.state.isWon) {
+      return (<div>
+        You Won . Nice
+        <button onClick={this.handleButton} >Play again</button>
+        </div>
+      );
+    }
     return (
       <div className="view" >
         <div className="contain">
@@ -219,7 +181,7 @@ class App extends Component {
               border={this.data.border}
               blockName="block1" // block name is used when update its position
               updateObjectPosition = {this.updateObjectPosition}
-              frameSpeed ={frameSpeed1}
+              frameSpeed = {frameSpeed1}
 
             />
             <Block 
@@ -231,7 +193,6 @@ class App extends Component {
             <Player 
               border={this.data.border}
               updateObjectPosition = {this.updateObjectPosition}
-              reset={this.resetPosition()}
             />
             
           </div>

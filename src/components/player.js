@@ -17,8 +17,8 @@ class Player extends Component {
                 left: this.player.current ? this.player.current.getBoundingClientRect().left : 275,
                 top: this.player.current ? this.player.current.getBoundingClientRect().top : 170
             }
-            
         }
+
         this.newPosition = this.newPosition.bind(this);
         this.checkDirection = this.checkDirection.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -26,16 +26,8 @@ class Player extends Component {
         this.checkCollisionWithBorder = this.checkCollisionWithBorder.bind(this);
     }
 
-    componentDidUpdate() {
-        if (this.props.reset) {
-            this.setState({
-                position: {
-                    left: 275,
-                    top: 170
-                }
-            })
-        }
-    }
+
+
     componentDidMount() {
         document.addEventListener('keydown', this.handleKeyDown);
         document.addEventListener('keyup', this.handleKeyUp);
@@ -158,7 +150,6 @@ class Player extends Component {
         const top = this.props.border.top;
         const bottom = this.props.border.bottom;
         const speed = 1;
-        let isWon = false;
         const player = {
             top: this.player.current.getBoundingClientRect().top,
             right: this.player.current.getBoundingClientRect().right,
@@ -198,7 +189,7 @@ class Player extends Component {
                     bottom: this.player.current.getBoundingClientRect().bottom,
                     left: this.player.current.getBoundingClientRect().left
                 }
-            });
+            }, true);
         }
         return (
             <div style={this.state.position} id='player' ref={this.player}>
